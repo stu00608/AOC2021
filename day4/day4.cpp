@@ -8,26 +8,28 @@ const int TABLE_SIZE = 5;
 const bool DEBUG = false;
 const bool DEBUG_INPUT = false;
 
-class BingoElement {
-    public:
-        int value;
-        bool is_set;
+class BingoElement
+{
+public:
+    int value;
+    bool is_set;
 
-        BingoElement(int value)
-        {
-            this->value = value;
-            this->is_set = false;
-        }
+    BingoElement(int value)
+    {
+        this->value = value;
+        this->is_set = false;
+    }
 };
 
-class BingoTable {
-    public:
-        std::vector<std::vector<BingoElement>> table;
-        bool is_winned = false;
-        int guess = -1;
+class BingoTable
+{
+public:
+    std::vector<std::vector<BingoElement>> table;
+    bool is_winned = false;
+    int guess = -1;
 };
 
-bool isArrayContainBool(std::vector<bool>& vec, bool target)
+bool isArrayContainBool(std::vector<bool> &vec, bool target)
 {
     return std::find(vec.begin(), vec.end(), target) != vec.end();
 }
@@ -37,8 +39,8 @@ BingoTable getBingoTable(std::ifstream &file)
     /*
         Usage:
             Read a 2D integer from a file point to the beginning of the number.
-        
-        * Accept extra space for 1 digit number. 
+
+        * Accept extra space for 1 digit number.
         * Load the extra space after the table.
 
         Example:
@@ -53,15 +55,15 @@ BingoTable getBingoTable(std::ifstream &file)
     std::string incomingLine;
     BingoTable table;
 
-    for(int col=0; col<TABLE_SIZE; col++)
+    for (int col = 0; col < TABLE_SIZE; col++)
     {
         char singleChar;
         char *numberCharArrayPtr = new char[3];
         std::vector<BingoElement> row;
-        for(int i=0; i<TABLE_SIZE; i++)
+        for (int i = 0; i < TABLE_SIZE; i++)
         {
-            int c=0;
-            while (c<3)
+            int c = 0;
+            while (c < 3)
             {
                 /* code */
                 file.get(singleChar);
@@ -84,17 +86,18 @@ BingoTable getBingoTable(std::ifstream &file)
     char spaceChar;
     file.get(spaceChar);
 
-    if(DEBUG_INPUT)
+    if (DEBUG_INPUT)
     {
-        for(int i=0; i<table.table.size(); i++)
+        for (int i = 0; i < table.table.size(); i++)
         {
-            for(int j=0;j<table.table[0].size();j++)
+            for (int j = 0; j < table.table[0].size(); j++)
             {
                 std::cout << table.table[i][j].value << " ";
             }
             std::cout << std::endl;
         }
-        std::cout << std::endl << std::endl;
+        std::cout << std::endl
+                  << std::endl;
     }
 
     return table;
@@ -105,7 +108,7 @@ std::vector<int> getGuessList(std::ifstream &file)
     /*
         Usage:
             Get first line of input split by ,
-        
+
         * Load the extra space after the table.
 
         Example:
@@ -115,43 +118,44 @@ std::vector<int> getGuessList(std::ifstream &file)
     */
     std::string incomingLine;
     std::vector<int> guessArray;
-    while(getline(file, incomingLine))
+    while (getline(file, incomingLine))
     {
-        if(incomingLine.empty())
+        if (incomingLine.empty())
         {
             break;
         }
         std::istringstream ss(incomingLine);
         std::string substr;
-        while(getline(ss, substr, ','))
+        while (getline(ss, substr, ','))
         {
             guessArray.push_back(std::stoi(substr));
         }
-        if(DEBUG_INPUT)
+        if (DEBUG_INPUT)
         {
-            for(int i=0; i<guessArray.size(); i++)
+            for (int i = 0; i < guessArray.size(); i++)
             {
                 std::cout << guessArray[i] << " ";
             }
-            std::cout << std::endl << std::endl;
+            std::cout << std::endl
+                      << std::endl;
         }
     }
 
     return guessArray;
 }
 
-void setBingoInTable(BingoTable& table, int target)
+void setBingoInTable(BingoTable &table, int target)
 {
     /*
         Usage:
             Input a table and target number, if the element match the target,
             set the is_set member in the BingoElement object.
     */
-    for(int i=0; i<table.table.size(); i++)
+    for (int i = 0; i < table.table.size(); i++)
     {
-        for(int j=0;j<table.table[0].size();j++)
+        for (int j = 0; j < table.table[0].size(); j++)
         {
-            if(table.table[i][j].value == target)
+            if (table.table[i][j].value == target)
             {
                 table.table[i][j].is_set = true;
             }
@@ -159,23 +163,23 @@ void setBingoInTable(BingoTable& table, int target)
     }
 }
 
-void appliedBingo(std::vector<BingoTable>& tableList, int target)
+void appliedBingo(std::vector<BingoTable> &tableList, int target)
 {
     /*
         Usage:
             A loop function for running setBingoInTable for a table list with a target number.
     */
 
-    for(int i=0; i<tableList.size(); i++)
+    for (int i = 0; i < tableList.size(); i++)
     {
-        if(!tableList[i].is_winned)
+        if (!tableList[i].is_winned)
         {
             setBingoInTable(tableList[i], target);
         }
     }
 }
 
-bool checkBingoInTable(BingoTable& table)
+bool checkBingoInTable(BingoTable &table)
 {
     /*
         Usage:
@@ -184,44 +188,46 @@ bool checkBingoInTable(BingoTable& table)
 
     std::vector<bool> rowCheckList;
     std::vector<bool> colCheckList;
-    for(int i=0; i<table.table.size(); i++)
+    for (int i = 0; i < table.table.size(); i++)
     {
         // Multiply the row.
         bool rowElement = true;
-        for(int j=0; j<TABLE_SIZE; j++)
+        for (int j = 0; j < table.table[0].size(); j++)
         {
-            rowElement *= table.table[i][j].is_set; 
+            rowElement *= table.table[i][j].is_set;
         }
         rowCheckList.push_back(rowElement);
 
         // Multiply the column.
         bool colElement = true;
-        for(int j=0; j<TABLE_SIZE; j++)
+        for (int j = 0; j < table.table[0].size(); j++)
         {
             colElement *= table.table[j][i].is_set;
         }
         colCheckList.push_back(colElement);
     }
 
-    if(DEBUG)
+    if (DEBUG)
     {
-        for(int j=0; j<TABLE_SIZE; j++)
+        for (int j = 0; j < TABLE_SIZE; j++)
         {
             std::cout << colCheckList[j] << " ";
         }
-        std::cout << std::endl << std::endl;
+        std::cout << std::endl
+                  << std::endl;
 
-        for(int j=0; j<TABLE_SIZE; j++)
+        for (int j = 0; j < TABLE_SIZE; j++)
         {
             std::cout << rowCheckList[j] << std::endl;
         }
-        std::cout << std::endl << std::endl;
+        std::cout << std::endl
+                  << std::endl;
     }
 
     return isArrayContainBool(colCheckList, true) || isArrayContainBool(rowCheckList, true);
 }
 
-void findBingoTable(std::vector<BingoTable>& tableList, std::vector<int>& order, int guess)
+void findBingoTable(std::vector<BingoTable> &tableList, std::vector<int> &order, int guess)
 {
     /*
         Usage:
@@ -231,7 +237,7 @@ void findBingoTable(std::vector<BingoTable>& tableList, std::vector<int>& order,
     for (int i = 0; i < tableList.size(); i++)
     {
         // Q: What if there is 2 more table winned in the same round, how to decide the order?
-        if(!tableList[i].is_winned && checkBingoInTable(tableList[i]))
+        if (!tableList[i].is_winned && checkBingoInTable(tableList[i]))
         {
             order.push_back(i);
             tableList[i].is_winned = true;
@@ -240,7 +246,7 @@ void findBingoTable(std::vector<BingoTable>& tableList, std::vector<int>& order,
     }
 }
 
-int calculateUnmarkValue(BingoTable& table)
+int calculateUnmarkValue(BingoTable &table)
 {
     /*
         Usage:
@@ -252,17 +258,17 @@ int calculateUnmarkValue(BingoTable& table)
     {
         for (int j = 0; j < table.table[0].size(); j++)
         {
-            if(!table.table[i][j].is_set)
+            if (!table.table[i][j].is_set)
             {
                 result += table.table[i][j].value;
-            }       
+            }
         }
     }
 
     return result;
 }
 
-void showTableinformation(BingoTable& table)
+void showTableinformation(BingoTable &table)
 {
     /*
         Usage:
@@ -274,7 +280,7 @@ void showTableinformation(BingoTable& table)
         {
             for (int j = 0; j < table.table[0].size(); j++)
             {
-                if(r == 0)
+                if (r == 0)
                 {
                     std::cout << table.table[i][j].value << " ";
                 }
@@ -285,42 +291,45 @@ void showTableinformation(BingoTable& table)
             }
             std::cout << std::endl;
         }
-        std::cout << std::endl << std::endl;
+        std::cout << std::endl
+                  << std::endl;
     }
-    
 }
 
 int main()
 {
     // ifstream object for reading file.
     std::ifstream inputFile("input");
-
-    // Read guess list and every table.
-    std::vector<int> guessArray = getGuessList(inputFile);
+    std::vector<int> guessArray;
     std::vector<BingoTable> tableList;
     std::vector<int> winnedOrder;
     std::vector<bool> winnedTable;
     int part1_answer = -1;
     int part2_answer = -1;
-    while(!inputFile.eof())
+
+    // Read guess list and every table.
+    guessArray = getGuessList(inputFile);
+
+    while (!inputFile.eof())
     {
         tableList.push_back(getBingoTable(inputFile));
     }
-    
+
+    // Main program
     for (int i = 0; i < guessArray.size(); i++)
     {
         appliedBingo(tableList, guessArray[i]);
-        if(i<TABLE_SIZE-1)
+        if (i < TABLE_SIZE - 1)
         {
             // The first 4 numbers will not trigger bingo.
             continue;
         }
-
         findBingoTable(tableList, winnedOrder, i);
     }
 
+    // Calculate the final score of the first bingo and the last bingo.
     part1_answer = calculateUnmarkValue(tableList[winnedOrder[0]]) * guessArray[tableList[winnedOrder[0]].guess];
-    part2_answer = calculateUnmarkValue(tableList[winnedOrder[winnedOrder.size()-1]]) * guessArray[tableList[winnedOrder[winnedOrder.size()-1]].guess];
+    part2_answer = calculateUnmarkValue(tableList[winnedOrder[winnedOrder.size() - 1]]) * guessArray[tableList[winnedOrder[winnedOrder.size() - 1]].guess];
 
     std::printf("Part1 Answer : %d\n\n", part1_answer);
     std::printf("Part2 Answer : %d\n\n", part2_answer);
